@@ -21,24 +21,24 @@ if [ ! -d "$TMP_DIR" ]; then
     mkdir $TMP_DIR
 fi
 
-guestmount -a $IMG -i $TMP_DIR
+sudo guestmount -a $IMG -i $TMP_DIR
 
-cp $TMP_DIR/etc/cloud/templates/hosts.debian.tmpl $TMP_DIR/etc/cloud/templates/hosts.tmpl
-sed -i "/preserve_hostname/a manage_etc_hosts: true" $TMP_DIR/etc/cloud/cloud.cfg
-sed -i "s/name: ubuntu/name: cloud/" $TMP_DIR/etc/cloud/cloud.cfg
-sed -i "s/gecos: Ubuntu/gecos: Cloud user/" $TMP_DIR/etc/cloud/cloud.cfg
-sed -i "/ed25519/d" $TMP_DIR/etc/ssh/sshd_config
+sudo cp $TMP_DIR/etc/cloud/templates/hosts.debian.tmpl $TMP_DIR/etc/cloud/templates/hosts.tmpl
+sudo sed -i "/preserve_hostname/a manage_etc_hosts: true" $TMP_DIR/etc/cloud/cloud.cfg
+sudo sed -i "s/name: ubuntu/name: cloud/" $TMP_DIR/etc/cloud/cloud.cfg
+sudo sed -i "s/gecos: Ubuntu/gecos: Cloud user/" $TMP_DIR/etc/cloud/cloud.cfg
+sudo sed -i "/ed25519/d" $TMP_DIR/etc/ssh/sshd_config
 
-sed -i "s#LABEL=cloudimg-rootfs#/dev/vda1#" \
+sudo sed -i "s#LABEL=cloudimg-rootfs#/dev/vda1#" \
     $TMP_DIR/etc/fstab \
     $TMP_DIR/boot/grub/menu.lst \
     $TMP_DIR/boot/grub/grub.cfg
 
-echo "sleep 5" >> $TMP_DIR/etc/init/plymouth-upstart-bridge.conf
+sudo echo "sleep 5" >> $TMP_DIR/etc/init/plymouth-upstart-bridge.conf
 
-sed -i "s/#GRUB_DISABLE_LINUX_UUID/GRUB_DISABLE_LINUX_UUID/" $TMP_DIR/etc/default/grub
+sudo sed -i "s/#GRUB_DISABLE_LINUX_UUID/GRUB_DISABLE_LINUX_UUID/" $TMP_DIR/etc/default/grub
 
-guestunmount $TMP_DIR
+sudo guestunmount $TMP_DIR
 
 glance image-create \
        --file $IMG \
@@ -50,9 +50,9 @@ TMP_IMG_ID="$(openstack image list --private | grep $TMP_IMG_NAME | tr "|" " " |
 
 echo "TMP_IMG_ID for image '$TMP_IMG_NAME': $TMP_IMG_ID"
 
-sed "s/TMP_IMAGE_ID/$TMP_IMG_ID/" $(dirname $0)/build-vars.template.yml > $(dirname $0)/build-vars.yml
+sudo sed "s/TMP_IMAGE_ID/$TMP_IMG_ID/" $(dirname $0)/build-vars.template.yml > $(dirname $0)/build-vars.yml
 
-sed -i "s/B_TARGET_NAME/$IMG_NAME/" $(dirname $0)/build-vars.yml
+sudo sed -i "s/B_TARGET_NAME/$IMG_NAME/" $(dirname $0)/build-vars.yml
 
 mkdir -p $(dirname $0)/output
 
